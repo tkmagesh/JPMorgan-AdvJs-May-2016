@@ -159,3 +159,72 @@ describe("Filtering", function(){
 		})
 	});
 });
+
+describe("GroupBy", function(){
+	function groupBy(list, keySelectorFn){
+		var result = {};
+		for(var i=0; i<list.length; i++){
+			var key = keySelectorFn(list[i]);
+			result[key] = result[key] || [];
+			result[key].push(list[i]);
+		}
+		return result;
+	}
+
+	function printGroup(groupedObj){
+		for(var key in groupedObj){
+			describe("Key - " + key, function(){
+				console.table(groupedObj[key]);
+			});
+		}
+	}
+
+	describe("Products by category", function(){
+		var categoryKeySelector = function(product){
+			return product.category;
+		}
+		var productsByCategory = groupBy(products, categoryKeySelector);
+		printGroup(productsByCategory);
+	});
+
+	describe("Products by cost", function(){
+		var costKeySelector = function(product){
+			return product.cost <= 30 ? "affordable" : "costly";
+		};
+		var productsByCost = groupBy(products, costKeySelector);
+		printGroup(productsByCost);
+	});
+});
+
+
+describe("Transform", function(){
+	function transform(list, transformFn){
+		var result = [];
+		for(var i=0; i<list.length; i++)
+			result.push(transformFn(list[i]));
+		return result;
+	}
+	describe("Products with value", function(){
+		var productsWithValue = transform(products, function(p){
+			return {
+				name : p.name,
+				value : p.cost * p.units
+			};
+		});
+		console.table(productsWithValue);
+	})
+});
+
+describe("Each", function(){
+	function each(list, action){
+		for(var i=0; i<list.length; i++)
+			action(list[i]);
+	}
+
+	describe("Products after 10% discount", function(){
+		each(products, function(product){
+			product.cost = product.cost * 0.9;
+		});
+		console.table(products);
+	})
+})
