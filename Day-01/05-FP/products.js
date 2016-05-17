@@ -227,4 +227,13 @@ describe("Each", function(){
 		});
 		console.table(products);
 	})
-})
+});
+
+function filter(list, criteriaFn, result = []){
+	if (list.length <= 0){
+		return result;
+	} else {
+		var currResult = criteriaFn(list[0]) ? result.concat(list[0]) : result;
+		return filter(list.slice(1), criteriaFn, currResult);
+	}
+}
